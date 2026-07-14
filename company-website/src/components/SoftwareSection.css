@@ -1,0 +1,438 @@
+/* ============================================================
+   SOFTWARE COMPATIBILITY SECTION -- styles
+   File: src/components/SoftwareSection.css
+   ============================================================ */
+
+.software-section {
+  /* Local tokens -- matches the rest of the site (navy/ink text, gold accent) */
+  --sw-ink: #111827;
+  --sw-muted: #5d6b82;
+  --sw-gold: #1e740d;
+  --sw-bg: #f5f8fc; /* light background, same as before */
+  --sw-border: #ececec;
+
+  padding: 110px 8%;
+  background: var(--sw-bg);
+}
+
+.software-container {
+  max-width: 1300px;
+  margin: auto;
+  text-align: center;
+}
+
+/* ---- Heading: centered, "We're Compatible With" in gold ---- */
+.software-container h2 {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--sw-ink);
+  margin-bottom: 14px;
+}
+
+.software-container h2 span {
+  color: var(--sw-gold);
+}
+
+/* ---- Subtitle ---- */
+.software-subtitle {
+  max-width: 620px;
+  margin: 0 auto 56px;
+  color: var(--sw-muted);
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   MARQUEE WRAPPER
+   overflow: hidden clips the track so only one "window" of cards
+   is visible at a time, while the track itself keeps scrolling.
+   ============================================================ */
+.software-marquee {
+  position: relative;
+  overflow: hidden;
+  /* extend to the container's edges so the fade covers the full width */
+  margin: 0 -8vw;
+  padding: 8px 0;
+}
+
+/* ---- Left & right fade-out gradients ----
+   Sit on top of the track (z-index 2) and fade from the section's
+   background color to transparent, so cards appear to melt in/out
+   at the edges instead of cutting off abruptly. */
+.software-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none; /* let hover/clicks pass through to the track */
+}
+
+.software-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--sw-bg), transparent);
+}
+
+.software-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--sw-bg), transparent);
+}
+
+/* ============================================================
+   THE SCROLLING TRACK
+   width: max-content lets the track grow as wide as its content
+   (all cards in a single row) instead of wrapping.
+   ============================================================ */
+.software-marquee-track {
+  display: flex;
+  align-items: stretch;
+  gap: 22px;
+  width: max-content;
+  padding: 0 8vw; /* aligns first card with the container on load */
+
+  /* Continuous right-to-left scroll, forever */
+  animation: software-scroll 32s linear infinite;
+}
+
+/* Pause the scroll while the visitor's cursor is over the marquee */
+.software-marquee:hover .software-marquee-track {
+  animation-play-state: paused;
+}
+
+/* Moves the track exactly half its width (= one full copy of the
+   list) to the left. Because the list is duplicated in the JSX,
+   the moment this finishes, the second half lines up perfectly
+   with where the first half started -- an invisible, gapless loop. */
+@keyframes software-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ============================================================
+   INDIVIDUAL CARDS
+   Every card is the exact same width/height regardless of content,
+   with a fixed logo zone (consistent 42-50px logo size) above a
+   name label -- centered both ways.
+   ============================================================ */
+.software-card {
+  flex: 0 0 auto; /* never shrink or grow -- fixed-width marquee items */
+  width: 200px; /* fixed width -- identical for every card */
+  height: 132px; /* fixed height -- identical for every card */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px 16px;
+
+  background: #ffffff;
+  border: 1px solid var(--sw-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Fixed logo zone -- every logo/icon renders at the same footprint
+   whether it's a real image or the placeholder icon */
+.software-card-logo {
+  height: 46px; /* consistent 42-50px logo size, as requested */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.software-card-logo img {
+  max-height: 46px;
+  max-width: 128px;
+  object-fit: contain;
+}
+
+.software-card-placeholder {
+  width: 32px;
+  height: 32px;
+  color: #b9c0c7; /* muted -- visually reads as "logo pending" */
+  stroke-width: 1.75px;
+}
+
+.software-card-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--sw-ink);
+  letter-spacing: 0.2px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Card lift + gold border on hover (also visually confirms the pause) */
+.software-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--sw-gold);
+  box-shadow: 0 18px 36px rgba(212, 175, 55, 0.22);
+}
+
+.software-card:hover .software-card-name {
+  color: #8a6d15;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1000px) {
+  .software-container h2 {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 600px) {
+  .software-section {
+    padding: 70px 5%;
+  }
+
+  .software-container h2 {
+    font-size: 28px;
+  }
+
+  .software-subtitle {
+    font-size: 15px;
+    margin-bottom: 40px;
+  }
+
+  .software-marquee {
+    margin: 0 -5vw;
+  }
+
+  .software-marquee-track {
+    gap: 14px;
+    padding: 0 5vw;
+    animation-duration: 24s; /* slightly faster on mobile, shorter viewport */
+  }
+
+  .software-card {
+    width: 138px;
+    height: 104px;
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .software-card-logo {
+    height: 36px;
+  }
+
+  .software-card-logo img {
+    max-height: 36px;
+    max-width: 96px;
+  }
+
+  .software-card-name {
+    font-size: 12.5px;
+  }
+
+  .software-fade {
+    width: 50px;
+  }
+}
+
+/* Respect reduced-motion preferences: keep the cards visible, just static */
+@media (prefers-reduced-motion: reduce) {
+  .software-marquee-track {
+    animation: none;
+  }
+}
+.software-section {
+  padding: 70px 8%;
+}
+/* ============================================================
+   SECURITY & COMPLIANCE SECTION
+   ============================================================ */
+
+.security-section {
+  --forest: var(--color-primary);
+  --gold: var(--color-secondary);
+  --ink: var(--color-text);
+  --muted: var(--color-text-muted);
+
+  padding: 70px 3%;
+  background: var(--color-bg-alt);
+}
+
+.security-container {
+  max-width: 1500px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 90px;
+  align-items: center;
+}
+
+.security-tag {
+  color: var(--gold);
+  font-weight: 800;
+  letter-spacing: 3px;
+  font-size: 17px;
+}
+
+.security-left h2 {
+  font-size: 56px;
+  color: var(--ink);
+  margin: 22px 0 46px;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+.cert-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.cert-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 34px 22px;
+  min-height: 235px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+/* DELETE zoom/hover effect */
+.cert-card:hover {
+  transform: none;
+  border-color: var(--color-border);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.cert-card-media {
+  width: 105px;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cert-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: none;
+}
+
+/* DELETE image zoom */
+.cert-card:hover .cert-card-media img {
+  transform: none;
+}
+
+.cert-card-icon {
+  color: var(--ink);
+  transition: none;
+}
+
+.cert-card-icon svg {
+  width: 88px;
+  height: 88px;
+  stroke-width: 1.5px;
+}
+
+/* DELETE icon zoom */
+.cert-card:hover .cert-card-icon {
+  transform: none;
+}
+
+.cert-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cert-card-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+  text-align: center;
+}
+
+.cert-card-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.security-right p {
+  font-size: 22px;
+  line-height: 1.85;
+  color: var(--muted);
+  margin-bottom: 26px;
+}
+
+.security-right p:last-child {
+  margin-bottom: 0;
+}
+
+.security-right strong {
+  color: var(--forest);
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .security-container {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .security-left {
+    text-align: center;
+  }
+
+  .security-left h2 {
+    font-size: 38px;
+  }
+
+  .cert-grid {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+}
+/* =========================
+   SOFTWARE RESPONSIVE
+========================= */
+
+@media (max-width:1024px){
+
+.software-grid{
+    grid-template-columns:repeat(3,1fr);
+}
+
+}
+
+@media (max-width:768px){
+
+.software-grid{
+    grid-template-columns:repeat(2,1fr);
+}
+
+.software-card{
+    padding:18px;
+}
+
+}
+
+@media (max-width:480px){
+
+.software-grid{
+    grid-template-columns:1fr;
+}
+
+}

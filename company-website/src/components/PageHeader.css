@@ -1,0 +1,49 @@
+.page-header {
+  --forest: #0f3c19;
+  --forest-deep: #054714;
+  --gold: #d4af37;
+
+  background: linear-gradient(135deg, #0f3c19 0%, #081f0f 100%);
+  padding: 110px 8% 84px;
+  text-align: center;
+}
+
+.page-header-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.page-header-eyebrow {
+  display: inline-block;
+  color: var(--gold);
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.page-header h1 {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 48px;
+  color: #ffffff;
+  margin: 0 0 16px;
+  letter-spacing: -0.3px;
+}
+
+.page-header p {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 17.5px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 70px 24px 50px;
+  }
+
+  .page-header h1 {
+    font-size: 30px;
+  }
+}

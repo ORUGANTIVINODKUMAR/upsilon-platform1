@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://upsilon-iz78.onrender.com/sitemap.xml
