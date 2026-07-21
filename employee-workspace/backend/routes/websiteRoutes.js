@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import websiteTransporter from "../config/websiteMail.js";
+import transporter from "../config/mail.js";
 
 const router = express.Router();
 
@@ -22,6 +22,9 @@ const RESOURCE_FILES = {
   },
 };
 
+/**
+ * Convert user-entered text into safe HTML.
+ */
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -31,16 +34,88 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
+/**
+ * Validate an email address.
+ */
 function isValidEmail(email = "") {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
 }
 
 /**
+ * Validate a phone number.
+ *
+ * Allows:
+ * Numbers
+ * Spaces
+ * +
+ * -
+ * Parentheses
+ */
+function isValidPhone(phone = "") {
+  return /^[0-9+\-() ]{7,25}$/.test(String(phone).trim());
+}
+
+/**
+ * Return the shared SMTP sender address.
+ */
+function getSenderAddress() {
+  return process.env.SMTP_FROM?.trim();
+}
+
+/**
+ * Return the internal website notification recipient.
+ */
+function getNotificationAddress() {
+  return process.env.EMAIL_TO?.trim();
+}
+
+/**
+ * Confirm the required email environment variables exist.
+ */
+function validateEmailConfiguration() {
+  const missingVariables = [];
+
+  if (!getSenderAddress()) {
+    missingVariables.push("SMTP_FROM");
+  }
+
+  if (!getNotificationAddress()) {
+    missingVariables.push("EMAIL_TO");
+  }
+
+  if (missingVariables.length > 0) {
+    const error = new Error(
+      `Missing email environment variables: ${missingVariables.join(", ")}`
+    );
+
+    error.code = "EMAIL_CONFIGURATION_ERROR";
+    throw error;
+  }
+}
+
+/**
+ * Write detailed email errors to the Render logs.
+ */
+function logEmailError(label, error) {
+  console.error(label, {
+    message: error?.message,
+    code: error?.code,
+    response: error?.response,
+    responseCode: error?.responseCode,
+    command: error?.command,
+  });
+}
+
+/**
  * POST /api/contact
- * Company website contact form
+ *
+ * Receives a company website contact form and sends it to the
+ * internal Upsilon notification email address.
  */
 router.post("/contact", async (req, res) => {
   try {
+    validateEmailConfiguration();
+
     const {
       fullName,
       firmName,
@@ -49,80 +124,113 @@ router.post("/contact", async (req, res) => {
       service,
       country,
       message,
-    } = req.body;
+    } = req.body ?? {};
 
-    if (!fullName?.trim() || !email?.trim() || !message?.trim()) {
+    const cleanFullName = String(fullName ?? "").trim();
+    const cleanFirmName = String(firmName ?? "").trim();
+    const cleanEmail = String(email ?? "").trim();
+    const cleanPhone = String(phone ?? "").trim();
+    const cleanService = String(service ?? "").trim();
+    const cleanCountry = String(country ?? "").trim();
+    const cleanMessage = String(message ?? "").trim();
+
+    if (!cleanFullName || !cleanEmail || !cleanMessage) {
       return res.status(400).json({
         success: false,
         message: "Name, email, and message are required.",
       });
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(cleanEmail)) {
       return res.status(400).json({
         success: false,
         message: "Please enter a valid email address.",
       });
     }
 
-    await websiteTransporter.sendMail({
-      from: `"Upsilon Website" <${process.env.EMAIL_FROM}>`,
-      to: process.env.EMAIL_TO,
-      replyTo: email.trim(),
+    if (cleanPhone && !isValidPhone(cleanPhone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid phone number.",
+      });
+    }
+
+    const senderAddress = getSenderAddress();
+    const notificationAddress = getNotificationAddress();
+
+    await transporter.sendMail({
+      from: {
+        name: "Upsilon Website",
+        address: senderAddress,
+      },
+
+      to: notificationAddress,
+
+      replyTo: {
+        name: cleanFullName,
+        address: cleanEmail,
+      },
+
       subject: "New Website Inquiry - Upsilon Services",
 
       text: `
 New Website Inquiry
 
-Full Name: ${fullName}
-Firm Name: ${firmName || "Not provided"}
-Email: ${email}
-Phone: ${phone || "Not provided"}
-Service: ${service || "Not selected"}
-Country / Region: ${country || "Not provided"}
+Full Name: ${cleanFullName}
+Firm Name: ${cleanFirmName || "Not provided"}
+Email: ${cleanEmail}
+Phone: ${cleanPhone || "Not provided"}
+Service: ${cleanService || "Not selected"}
+Country / Region: ${cleanCountry || "Not provided"}
 
 Message:
-${message}
-      `,
+${cleanMessage}
+      `.trim(),
 
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <div
+          style="
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #222222;
+          "
+        >
           <h2>New Website Inquiry</h2>
 
           <p>
             <strong>Full Name:</strong>
-            ${escapeHtml(fullName)}
+            ${escapeHtml(cleanFullName)}
           </p>
 
           <p>
             <strong>Firm Name:</strong>
-            ${escapeHtml(firmName || "Not provided")}
+            ${escapeHtml(cleanFirmName || "Not provided")}
           </p>
 
           <p>
             <strong>Email:</strong>
-            ${escapeHtml(email)}
+            ${escapeHtml(cleanEmail)}
           </p>
 
           <p>
             <strong>Phone:</strong>
-            ${escapeHtml(phone || "Not provided")}
+            ${escapeHtml(cleanPhone || "Not provided")}
           </p>
 
           <p>
             <strong>Service:</strong>
-            ${escapeHtml(service || "Not selected")}
+            ${escapeHtml(cleanService || "Not selected")}
           </p>
 
           <p>
             <strong>Country / Region:</strong>
-            ${escapeHtml(country || "Not provided")}
+            ${escapeHtml(cleanCountry || "Not provided")}
           </p>
 
           <p><strong>Message:</strong></p>
 
           <p>
-            ${escapeHtml(message).replaceAll("\n", "<br>")}
+            ${escapeHtml(cleanMessage).replaceAll("\n", "<br>")}
           </p>
         </div>
       `,
@@ -133,11 +241,7 @@ ${message}
       message: "Submitted successfully. We will contact you soon.",
     });
   } catch (error) {
-    console.error("Contact email error:", {
-      message: error.message,
-      code: error.code,
-      response: error.response,
-    });
+    logEmailError("Contact email error:", error);
 
     return res.status(500).json({
       success: false,
@@ -149,32 +253,44 @@ ${message}
 
 /**
  * POST /api/download-resource
- * Emails the selected PDF to the website visitor
+ *
+ * Sends the selected PDF to the visitor and sends a separate
+ * lead notification to the Upsilon internal email address.
  */
 router.post("/download-resource", async (req, res) => {
   try {
-    const { name, email, company, phone, resource } = req.body;
+    validateEmailConfiguration();
 
-    if (
-      !name?.trim() ||
-      !email?.trim() ||
-      !phone?.trim() ||
-      !resource?.trim()
-    ) {
+    const { name, email, company, phone, resource } = req.body ?? {};
+
+    const cleanName = String(name ?? "").trim();
+    const cleanEmail = String(email ?? "").trim();
+    const cleanCompany = String(company ?? "").trim();
+    const cleanPhone = String(phone ?? "").trim();
+    const cleanResource = String(resource ?? "").trim();
+
+    if (!cleanName || !cleanEmail || !cleanPhone || !cleanResource) {
       return res.status(400).json({
         success: false,
         message: "Name, email, phone, and resource are required.",
       });
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(cleanEmail)) {
       return res.status(400).json({
         success: false,
         message: "Please enter a valid email address.",
       });
     }
 
-    const resourceInfo = RESOURCE_FILES[resource];
+    if (!isValidPhone(cleanPhone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid phone number.",
+      });
+    }
+
+    const resourceInfo = RESOURCE_FILES[cleanResource];
 
     if (!resourceInfo) {
       return res.status(400).json({
@@ -184,10 +300,10 @@ router.post("/download-resource", async (req, res) => {
     }
 
     /*
-      Current file:
+      Current route file:
       employee-workspace/backend/routes/websiteRoutes.js
 
-      PDF location:
+      PDF source:
       company-website/public/resources/...
     */
     const filePath = path.resolve(
@@ -205,14 +321,23 @@ router.post("/download-resource", async (req, res) => {
       });
     }
 
-    await websiteTransporter.sendMail({
-      from: `"Upsilon Services" <${process.env.EMAIL_FROM}>`,
-      to: email.trim(),
-      replyTo: process.env.EMAIL_TO,
+    const senderAddress = getSenderAddress();
+    const notificationAddress = getNotificationAddress();
+
+    const visitorEmail = {
+      from: {
+        name: "Upsilon Services",
+        address: senderAddress,
+      },
+
+      to: cleanEmail,
+
+      replyTo: notificationAddress,
+
       subject: `Your requested download: ${resourceInfo.label}`,
 
       text: `
-Hello ${name},
+Hello ${cleanName},
 
 Thank you for your interest.
 
@@ -221,11 +346,19 @@ Your requested resource, "${resourceInfo.label}", is attached to this email.
 If you have any questions, reply to this email and our team will help.
 
 Upsilon Services
-      `,
+      `.trim(),
 
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2>Thanks for your interest, ${escapeHtml(name)}!</h2>
+        <div
+          style="
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #222222;
+          "
+        >
+          <h2>
+            Thanks for your interest, ${escapeHtml(cleanName)}!
+          </h2>
 
           <p>
             Your requested resource,
@@ -234,11 +367,14 @@ Upsilon Services
           </p>
 
           <p>
-            If you have any questions, reply to this email and our team will
-            help.
+            If you have any questions, reply to this email and our team
+            will help.
           </p>
 
-          <p>Upsilon Services</p>
+          <p>
+            Regards,<br>
+            Upsilon Services
+          </p>
         </div>
       `,
 
@@ -248,26 +384,41 @@ Upsilon Services
           path: filePath,
         },
       ],
-    });
+    };
 
-    await websiteTransporter.sendMail({
-      from: `"Upsilon Website" <${process.env.EMAIL_FROM}>`,
-      to: process.env.EMAIL_TO,
-      replyTo: email.trim(),
+    const internalNotificationEmail = {
+      from: {
+        name: "Upsilon Website",
+        address: senderAddress,
+      },
+
+      to: notificationAddress,
+
+      replyTo: {
+        name: cleanName,
+        address: cleanEmail,
+      },
+
       subject: `New resource download - ${resourceInfo.label}`,
 
       text: `
 New Resource Download
 
 Resource: ${resourceInfo.label}
-Name: ${name}
-Company: ${company || "Not provided"}
-Email: ${email}
-Phone: ${phone}
-      `,
+Name: ${cleanName}
+Company: ${cleanCompany || "Not provided"}
+Email: ${cleanEmail}
+Phone: ${cleanPhone}
+      `.trim(),
 
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <div
+          style="
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #222222;
+          "
+        >
           <h2>New Resource Download</h2>
 
           <p>
@@ -277,26 +428,34 @@ Phone: ${phone}
 
           <p>
             <strong>Name:</strong>
-            ${escapeHtml(name)}
+            ${escapeHtml(cleanName)}
           </p>
 
           <p>
             <strong>Company:</strong>
-            ${escapeHtml(company || "Not provided")}
+            ${escapeHtml(cleanCompany || "Not provided")}
           </p>
 
           <p>
             <strong>Email:</strong>
-            ${escapeHtml(email)}
+            ${escapeHtml(cleanEmail)}
           </p>
 
           <p>
             <strong>Phone:</strong>
-            ${escapeHtml(phone)}
+            ${escapeHtml(cleanPhone)}
           </p>
         </div>
       `,
-    });
+    };
+
+    /*
+      Send the visitor email and the internal notification at the same time.
+    */
+    await Promise.all([
+      transporter.sendMail(visitorEmail),
+      transporter.sendMail(internalNotificationEmail),
+    ]);
 
     return res.status(200).json({
       success: true,
@@ -304,11 +463,7 @@ Phone: ${phone}
         "Submitted successfully. The resource has been sent to your email.",
     });
   } catch (error) {
-    console.error("Resource download email error:", {
-      message: error.message,
-      code: error.code,
-      response: error.response,
-    });
+    logEmailError("Resource download email error:", error);
 
     return res.status(500).json({
       success: false,
