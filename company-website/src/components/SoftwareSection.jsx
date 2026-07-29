@@ -1,24 +1,18 @@
-import { LuAppWindow } from "react-icons/lu";
+import { LuAppWindow, LuCheck } from "react-icons/lu";
+import ScrollRevealHeading, { toWords } from "./ScrollRevealHeading";
 import "./SoftwareSection.css";
 
-// ============================================================
-// SOFTWARE COMPATIBILITY SECTION
-// Infinite horizontal marquee of supported software/platforms.
-//
-// Real logo files only exist for Drake, QuickBooks, and Xero (see
-// /public) -- these are already licensed assets you had on hand.
-// The rest use a neutral placeholder icon + name until you add the
-// official logo file. To upgrade any entry once you have the real
-// artwork: add the file to /public and set `logo: "/yourfile.svg"`.
-// Most vendors publish official brand/press-kit pages with usable
-// SVG/PNG logos (e.g. Intuit's brand portal for QuickBooks, Xero's
-// brand assets page, etc.) -- check each vendor's site directly.
-// ============================================================
+// The heading split into scroll-revealed words. The green line breaks
+// onto its own row to match the design.
+const headingWords = [
+  ...toWords("Compatible With the Accounting and Tax Software", "navy"),
+  ...toWords("Your Firm Already Uses", "green", { breakBefore: true }),
+];
 
 const softwareList = [
-  { name: "Drake", logo: "/drake.jpg" },
+  { name: "Drake Tax", logo: "/drake.jpg" },
   { name: "ProSeries", logo: "/proseries.png" },
-  { name: "ProConnect",logo: "/proconnect.png" },
+  { name: "ProConnect", logo: "/proconnect.png" },
   { name: "QuickBooks", logo: "/quickbooks.png" },
   { name: "CCH Axcess", logo: "/cch.png" },
   { name: "UltraTax CS", logo: "/ultratax.jpeg" },
@@ -26,52 +20,111 @@ const softwareList = [
   { name: "Xero", logo: "/xero.png" },
   { name: "Wave", logo: "/wave.png" },
   { name: "SurePrep", logo: "/sureprep.png" },
-
   { name: "Bloomberg Tax", logo: "/bloomberg.jpg" },
-  { name: "GoSystem", logo: "/gosystem.png" },
+  { name: "GoSystem Tax RS", logo: "/gosystem.png" },
   { name: "Canopy", logo: "/canopy.png" },
   { name: "Thomson Reuters", logo: "/thomson.png" },
-
 ];
 
-// Duplicate the list so the track has two identical halves.
-// This is what makes the loop seamless: the track animates from
-// translateX(0) to translateX(-50%), and since the second half is
-// an exact copy of the first, the reset is invisible to the eye.
 const marqueeItems = [...softwareList, ...softwareList];
+
+const benefits = [
+  "Work directly inside your existing systems",
+  "Reduce software migration and onboarding time",
+  "Maintain your firm's established workflows",
+];
 
 function SoftwareSection() {
   return (
-    <section className="software-section">
+    <section
+      className="software-section"
+      aria-labelledby="software-heading"
+    >
       <div className="software-container">
-        <h2 data-aos="fade-up">
-          Software <span>We're Compatible With</span>
-        </h2>
+        <div className="software-header">
+          <span className="software-eyebrow" data-aos="fade-up">
+            Software Compatibility
+          </span>
 
-        <p className="software-subtitle" data-aos="fade-up">
-          We work directly inside the tax, accounting, and payroll platforms
-          your firm already relies on - no extra setup, no workflow changes.
-        </p>
+          <ScrollRevealHeading
+            id="software-heading"
+            className="software-reveal-heading"
+            words={headingWords}
+          />
 
-        <div className="software-marquee" data-aos="fade-up">
-          <div className="software-fade software-fade-left"></div>
-          <div className="software-fade software-fade-right"></div>
+          <p className="software-subtitle" data-aos="fade-up">
+            Our professionals work within your existing accounting, tax,
+            document-management, and workflow platforms, helping your CPA
+            firm expand capacity without changing established systems.
+          </p>
+        </div>
+
+        <div
+          className="software-marquee"
+          data-aos="fade-up"
+          aria-label="Accounting and tax software platforms supported by Upsilon Services"
+        >
+          <div
+            className="software-fade software-fade-left"
+            aria-hidden="true"
+          />
+
+          <div
+            className="software-fade software-fade-right"
+            aria-hidden="true"
+          />
 
           <div className="software-marquee-track">
             {marqueeItems.map((item, index) => (
-              <div className="software-card" key={`${item.name}-${index}`}>
+              <article
+                className="software-card"
+                key={`${item.name}-${index}`}
+                aria-hidden={index >= softwareList.length}
+              >
                 <div className="software-card-logo">
                   {item.logo ? (
-                    <img src={item.logo} alt={item.name} loading="lazy" decoding="async" />
+                    <img
+                      src={item.logo}
+                      alt={
+                        index < softwareList.length
+                          ? `${item.name} accounting or tax software logo`
+                          : ""
+                      }
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : (
-                    <LuAppWindow className="software-card-placeholder" />
+                    <LuAppWindow
+                      className="software-card-placeholder"
+                      aria-hidden="true"
+                    />
                   )}
                 </div>
-                <span className="software-card-name">{item.name}</span>
-              </div>
+
+                <span className="software-card-name">
+                  {item.name}
+                </span>
+              </article>
             ))}
           </div>
         </div>
+
+        <div className="software-benefits" data-aos="fade-up">
+          {benefits.map((benefit) => (
+            <div className="software-benefit" key={benefit}>
+              <span className="software-benefit-icon">
+                <LuCheck aria-hidden="true" />
+              </span>
+
+              <span>{benefit}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="software-note" data-aos="fade-up">
+          Don&apos;t see your platform listed? Our team can adapt to many
+          accounting, tax, payroll, practice-management, and document systems.
+        </p>
       </div>
     </section>
   );

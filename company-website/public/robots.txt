@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /careers-admin
 
-Sitemap: https://upsilon-iz78.onrender.com/sitemap.xml
+Sitemap: https://www.upsilonservices.com/sitemap.xml

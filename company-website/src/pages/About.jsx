@@ -8,12 +8,12 @@ import IndustriesSection from "../components/IndustriesSection";
 import AboutLeadership from "../components/AboutLeadership";
 import AboutStats from "../components/AboutStats";
 import usePageMeta from "../hooks/usePageMeta";
-import CountUpNumber from "../components/CountUpNumber";
+
 function About() {
   usePageMeta({
-    title: "About Us",
+    title: "About Upsilon Services | CPA Outsourcing Partner",
     description:
-      "Upsilon Services builds long-term partnerships with US CPA firms through secure, reliable, and scalable offshore accounting support.",
+      "Learn how Upsilon Services supports US CPA firms with secure, scalable accounting, tax, audit, bookkeeping, and back-office outsourcing services.",
     path: "/about",
   });
 

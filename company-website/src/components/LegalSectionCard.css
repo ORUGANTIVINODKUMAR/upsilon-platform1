@@ -57,3 +57,19 @@
     font-size: 18px;
   }
 }
+.industries-subtitle {
+  max-width: 760px;
+  margin: 16px auto 44px;
+  text-align: center;
+  line-height: 1.75;
+}
+
+.industries-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.industries-card p {
+  margin: 10px 0 0;
+  line-height: 1.65;
+}

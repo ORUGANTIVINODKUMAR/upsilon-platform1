@@ -6,6 +6,7 @@
 // ============================================================
 import { motion } from "framer-motion";
 import { LuCoins, LuTarget, LuGlobe, LuTrendingUp, LuHandshake, LuRocket } from "react-icons/lu";
+import ScrollRevealHeading, { toWords } from "./ScrollRevealHeading";
 import "./WhyUpsilon.css";
 
 const benefits = [
@@ -68,7 +69,12 @@ function WhyUpsilon() {
           transition={{ duration: 0.5 }}
         >
           <span className="why-label">WHY UPSILON</span>
-          <h2>More Than an Outsourcing Provider - An Extension of Your Firm</h2>
+          <ScrollRevealHeading
+            words={toWords(
+              "More Than an Outsourcing Provider - An Extension of Your Firm",
+              "navy"
+            )}
+          />
           <p>
             Every CPA firm has its own workflows, review standards, and client expectations. Upsilon integrates seamlessly with your existing processes to provide accounting, tax, audit, and back-office support that feels like an extension of your in-house team. By combining experienced professionals, secure delivery practices, and flexible engagement models, we help firms increase capacity, reduce operational costs, improve turnaround times, and free partners to focus on client relationships and business growth.
           </p>

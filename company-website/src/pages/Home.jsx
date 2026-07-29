@@ -4,15 +4,27 @@ import SecuritySection from "../components/SecuritySection";
 import ServicesSection from "../components/ServicesSection";
 import SoftwareSection from "../components/SoftwareSection";
 import FAQSection from "../components/FAQSection";
+
 import usePageMeta from "../hooks/usePageMeta";
+import useStructuredData from "../hooks/useStructuredData";
+
+import {
+  organizationSchema,
+  websiteSchema,
+} from "../data/schema";
 
 function Home() {
   usePageMeta({
-    title: "Outsourced Accounting & Tax Support for CPA Firms",
+    title: "CPA Outsourcing Services | Accounting, Tax & Audit Support",
     description:
-      "Upsilon Services helps CPA firms expand capacity with trusted outsourced tax, accounting, bookkeeping, and audit support -- 35-55% cost savings, ISO 27001 & CMMI Level 3 secured.",
+      "Upsilon Services provides accounting outsourcing, bookkeeping, tax preparation, audit support, payroll, and back-office services for CPA firms. Secure, scalable, and built for CPA firms.",
     path: "/",
+    image: "/upsilonlogo.png",
+    imageAlt: "Upsilon Services CPA accounting and tax outsourcing",
   });
+
+  useStructuredData("organization-schema", organizationSchema);
+  useStructuredData("website-schema", websiteSchema);
 
   return (
     <>

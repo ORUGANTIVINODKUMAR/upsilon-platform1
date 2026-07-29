@@ -1,10 +1,12 @@
 // ============================================================
 // SECURITY & COMPLIANCE SECTION
-// Left: heading + four premium certification/security cards.
-// Right: bold, short-paragraph copy.
+// Left: heading + four certification/security cards.
+// Right: supporting security and compliance content.
 // ============================================================
+
 import { motion } from "framer-motion";
 import { LuShieldCheck } from "react-icons/lu";
+import ScrollRevealHeading, { toWords } from "./ScrollRevealHeading";
 import "./SecuritySection.css";
 
 const cards = [
@@ -24,26 +26,35 @@ const cards = [
     type: "image",
     src: "/nda.png",
     label: "NDA Agreement",
-    subtitle: "Every engagement is backed by NDA",
+    subtitle: "Every engagement is backed by an NDA",
   },
   {
     type: "icon",
-    icon: <LuShieldCheck />,
+    icon: <LuShieldCheck aria-hidden="true" />,
     label: "Controlled Access",
-    subtitle: "Role-based access with least-privilege principle",
+    subtitle: "Role-based access using least-privilege principles",
   },
 ];
 
 function SecuritySection() {
   return (
-    <section className="security-section">
+    <section
+      className="security-section"
+      aria-labelledby="security-compliance-heading"
+    >
       <div className="security-container">
         <div className="security-left" data-aos="fade-right">
-          <span className="security-tag">SECURITY & COMPLIANCE</span>
+          <span className="security-tag">
+            SECURITY &amp; COMPLIANCE
+          </span>
 
-          <h1>
-            Security isn't an Add-on it's at our core.
-          </h1>
+          <ScrollRevealHeading
+            id="security-compliance-heading"
+            words={toWords(
+              "Enterprise Security & Compliance for CPA Outsourcing",
+              "navy"
+            )}
+          />
 
           <div className="cert-grid">
             {cards.map((card, index) => (
@@ -53,20 +64,37 @@ function SecuritySection() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.05,
+                }}
               >
                 {card.type === "image" ? (
                   <div className="cert-card-media">
-                    <img src={card.src} alt={card.label} loading="lazy" decoding="async" />
+                    <img
+                      src={card.src}
+                      alt={`${card.label} security and compliance standard used by Upsilon Services`}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
                 ) : (
-                  <div className="cert-card-media cert-card-icon">
+                  <div
+                    className="cert-card-media cert-card-icon"
+                    aria-hidden="true"
+                  >
                     {card.icon}
                   </div>
                 )}
+
                 <div className="cert-card-text">
-                  <span className="cert-card-title">{card.label}</span>
-                  <span className="cert-card-subtitle">{card.subtitle}</span>
+                  <span className="cert-card-title">
+                    {card.label}
+                  </span>
+
+                  <span className="cert-card-subtitle">
+                    {card.subtitle}
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -75,32 +103,37 @@ function SecuritySection() {
 
         <div className="security-right" data-aos="fade-left">
           <p>
-            At <strong>Upsilon</strong>, security is integral to
-            everything we do.
+            At <strong>Upsilon Services</strong>, protecting client
+            financial data is a core part of every engagement. Our
+            accounting, tax, audit, and back-office outsourcing services
+            are supported by secure workflows, confidentiality controls,
+            and clearly defined access permissions.
           </p>
 
           <p>
-            Protecting client information, maintaining confidentiality, and
-            ensuring operational integrity are at the core of every
-            engagement.
+            We follow structured processes designed to protect sensitive
+            financial information, maintain client confidentiality, and
+            support consistent operational quality.
           </p>
 
           <p>
             Our security framework is supported by internationally
-            recognized standards including <strong>ISO 27001</strong> and{" "}
+            recognized standards, including <strong>ISO 27001</strong> and{" "}
             <strong>CMMI Level 3</strong>.
           </p>
 
           <p>
-            Every engagement is backed by a signed <strong>NDA</strong> and
-            strict <strong>confidentiality</strong> controls, reflecting our
-            commitment to secure data handling and process excellence.
+            Every engagement is backed by a signed{" "}
+            <strong>non-disclosure agreement</strong> and strict
+            confidentiality procedures, helping ensure that client data is
+            handled responsibly throughout the engagement.
           </p>
 
           <p>
-            Through secure infrastructure, controlled access, and encrypted
-            workflows, we deliver dependable offshore accounting and tax
-            support that CPA firms can trust.
+            Through controlled access, encrypted workflows, secure
+            infrastructure, and transparent communication, we provide
+            dependable offshore accounting and tax support that CPA firms
+            can trust.
           </p>
         </div>
       </div>

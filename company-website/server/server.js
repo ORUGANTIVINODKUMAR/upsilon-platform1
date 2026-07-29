@@ -43,7 +43,7 @@ if (missingEnvVariables.length > 0) {
   console.error(
     `Missing environment variables: ${missingEnvVariables.join(", ")}`
   );
-}
+} 
  
 // Brevo SMTP configuration
 const transporter = nodemailer.createTransport({

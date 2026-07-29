@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { FaFilePdf, FaFilePowerpoint, FaDownload } from "react-icons/fa";
+import {
+  FaFilePdf,
+  FaFilePowerpoint,
+  FaDownload,
+} from "react-icons/fa";
+
 import PageHeader from "../components/PageHeader";
 import DownloadModal from "../components/DownloadModal";
 import usePageMeta from "../hooks/usePageMeta";
+
 import "./Resources.css";
 
-const resources = [
+const downloadableResources = [
   {
     key: "offshoring-guide",
     title: "Choose If Offshoring Fits Your Firm",
@@ -26,9 +32,9 @@ const resources = [
 
 function Resources() {
   usePageMeta({
-    title: "Resources",
+    title: "CPA Firm Resources, Guides & Outsourcing Insights",
     description:
-      "Download Upsilon resources for CPA firms, including our offshoring fit guide and offshore accounting pilot playbook.",
+      "Explore accounting outsourcing guides, CPA firm resources, practical insights, downloadable playbooks, and articles from Upsilon Services.",
     path: "/resources",
   });
 
@@ -39,15 +45,31 @@ function Resources() {
       <PageHeader
         eyebrow="RESOURCES"
         title="Guides & Insights for Accounting Firms"
-        subtitle="Practical resources for CPA firm owners and managers exploring offshore accounting support."
+        subtitle="Explore practical resources, downloadable guides, and articles for CPA firms seeking secure and scalable accounting outsourcing support."
       />
 
-      <section className="resources-section">
+      <section
+        className="resources-section downloadable-resources-section"
+        aria-labelledby="downloadable-resources-heading"
+      >
         <div className="resources-container">
+          <div className="resources-intro">
+            <span className="resources-label">FREE DOWNLOADS</span>
+
+            <h2 id="downloadable-resources-heading">
+              Downloadable Guides for CPA Firm Owners
+            </h2>
+
+            <p>
+              Download practical guides designed to help your firm evaluate,
+              test, and implement accounting outsourcing successfully.
+            </p>
+          </div>
+
           <div className="resources-grid">
-            {resources.map((resource) => (
-              <div className="pdf-card" key={resource.key}>
-                <div className="pdf-card-icon">
+            {downloadableResources.map((resource) => (
+              <article className="pdf-card" key={resource.key}>
+                <div className="pdf-card-icon" aria-hidden="true">
                   {resource.type === "ppt" ? (
                     <FaFilePowerpoint />
                   ) : (
@@ -56,16 +78,19 @@ function Resources() {
                 </div>
 
                 <h3>{resource.title}</h3>
+
                 <p>{resource.description}</p>
 
                 <button
                   type="button"
                   className="pdf-download-btn"
                   onClick={() => setActiveResource(resource)}
+                  aria-label={`Download ${resource.title}`}
                 >
-                  <FaDownload /> Get Now
+                  <FaDownload aria-hidden="true" />
+                  Get Now
                 </button>
-              </div>
+              </article>
             ))}
           </div>
         </div>

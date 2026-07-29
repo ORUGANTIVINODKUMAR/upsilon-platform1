@@ -15,6 +15,8 @@ import profileRoutes from "./routes/profileRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
 const app = express();
 import holidayRoutes from "./routes/holidayRoutes.js";
+import careersRoutes from "./routes/careersRoutes.js";
+import careersAdminRoutes from "./routes/careersAdminRoutes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -63,6 +65,8 @@ app.use("/api/profile", profileRoutes);;
 app.use("/api/holidays", holidayRoutes);
 app.use("/api", websiteRoutes);
 app.use("/api/teams", teamRoutes);
+app.use("/api/careers", careersRoutes);
+app.use("/api/careers-admin", careersAdminRoutes);
 const companyFrontendPath = path.resolve(
   __dirname,
   "../../company-website/dist"

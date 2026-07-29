@@ -1,8 +1,6 @@
 // ============================================================
 // ABOUT PAGE HERO
-// Full-width background image with a dark gradient overlay so the
-// heading/copy stay readable, matching the premium treatment used
-// on the homepage hero.
+// Full-width background image with a premium dark overlay.
 // ============================================================
 
 import { motion } from "framer-motion";
@@ -15,6 +13,7 @@ function AboutHero() {
       style={{
         backgroundImage: "url(/aboutupsilon.png)",
       }}
+      aria-labelledby="about-hero-heading"
     >
       <div className="about-hero-overlay"></div>
 
@@ -23,19 +22,31 @@ function AboutHero() {
           className="about-hero-copy"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{
+            duration: 0.6,
+            ease: "easeOut",
+          }}
         >
-          <span className="about-hero-label">ABOUT UPSILON</span>
-          <h1>Building Long-Term Partnerships with CPA Firms</h1>
+          <span className="about-hero-label">
+            ABOUT UPSILON SERVICES
+          </span>
+
+          <h1 id="about-hero-heading">
+            Trusted Accounting & Tax Outsourcing Partner for CPA Firms
+          </h1>
+
           <p>
-            We help US CPA and accounting firms strengthen their delivery
-            capacity through secure, reliable, and scalable offshore
-            accounting support.
+            Upsilon Services helps CPA and accounting firms across the United
+            States expand capacity through secure, scalable, and reliable
+            accounting outsourcing, tax preparation, bookkeeping, audit
+            support, and back-office solutions.
           </p>
+
           <p>
-            Our mission is simple to become a trusted extension of every
-            firm's team while maintaining the quality, confidentiality, and
-            responsiveness their clients expect.
+            We become an extension of your firm by integrating with your
+            existing team, software, and workflows while maintaining the
+            highest standards of quality, confidentiality, responsiveness,
+            and client service.
           </p>
         </motion.div>
       </div>

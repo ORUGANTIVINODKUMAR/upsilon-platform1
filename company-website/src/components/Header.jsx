@@ -125,6 +125,13 @@ function Header() {
           </NavLink>
 
           <NavLink
+            to="/careers"
+            onClick={closeMenu}
+          >
+            Careers
+          </NavLink>
+
+          <NavLink
             to="/contact"
             className="sales-btn"
             onClick={closeMenu}
