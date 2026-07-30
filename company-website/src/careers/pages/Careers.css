@@ -822,3 +822,300 @@
     0 100%
   );
 }
+/* =========================================
+   FULL-WIDTH CAREERS HERO BACKGROUND
+   Keep this block at the end of this file
+========================================= */
+
+.career-module-hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 680px;
+  padding: 0;
+  overflow: hidden;
+  align-items: center;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(3, 18, 31, 0.97) 0%,
+      rgba(3, 25, 36, 0.92) 38%,
+      rgba(2, 45, 45, 0.68) 67%,
+      rgba(2, 18, 29, 0.58) 100%
+    ),
+    url("/carrersbg.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%, auto 100%;
+}
+/* FINAL CAREERS HERO IMAGE FIX */
+
+.career-module-page .career-module-hero {
+  background-color: #03131e !important;
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(3, 18, 31, 0.98) 0%,
+      rgba(3, 25, 36, 0.92) 40%,
+      rgba(2, 45, 45, 0.68) 70%,
+      rgba(2, 18, 29, 0.55) 100%
+    ),
+    url("/carrersbg.png") !important;
+
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, right center !important;
+
+  /* Overlay fills the hero; image keeps its proportions */
+  background-size: 100% 100%, auto 125% !important;
+}
+
+/* Mobile adjustment */
+@media (max-width: 720px) {
+  .career-module-page .career-module-hero {
+    background-position: center center, 65% center !important;
+    background-size: 100% 100%, auto 100% !important;
+  }
+}
+/* Restore the normal content width inside the hero */
+.career-module-hero .career-module-container {
+  width: min(1180px, calc(100% - 40px));
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* Hero now uses one content column */
+.career-module-hero-layout {
+  display: flex;
+  min-height: 680px;
+  align-items: center;
+}
+
+/* Text displayed over the background */
+.career-module-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  max-width: 720px;
+  padding: 100px 0;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.career-module-hero-content .career-module-eyebrow {
+  margin: 0 0 20px;
+  color: #71dfa3;
+}
+
+.career-module-hero-content h1 {
+  max-width: 680px;
+  margin: 0 0 28px;
+  color: #ffffff;
+  font-size: clamp(50px, 5vw, 72px);
+  font-weight: 750;
+  line-height: 1.08;
+  letter-spacing: -2px;
+}
+
+.career-module-hero-description {
+  max-width: 650px;
+  margin: 0 0 34px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* Green hero button */
+.career-module-hero .career-module-primary-button {
+  width: fit-content;
+  min-width: 215px;
+  border-color: #078647;
+  color: #ffffff;
+  background: #078647;
+}
+
+.career-module-hero .career-module-primary-button:hover {
+  border-color: #0aa55a;
+  color: #ffffff;
+  background: #0aa55a;
+}
+
+/* Hide the old separate right-side image */
+.career-module-hero-image-wrapper {
+  display: none;
+}
+
+/* Tablet */
+@media (max-width: 1050px) {
+  .career-module-hero,
+  .career-module-hero-layout {
+    min-height: 620px;
+  }
+
+  .career-module-hero {
+    background-position: 62% center;
+  }
+
+  .career-module-hero-content {
+    max-width: 650px;
+    padding: 80px 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .career-module-hero {
+    min-height: 560px;
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(3, 18, 31, 0.96) 0%,
+        rgba(3, 24, 34, 0.9) 65%,
+        rgba(3, 28, 35, 0.78) 100%
+      ),
+      url("/carrersbg.png");
+    background-position: 68% center;
+  }
+
+  .career-module-hero-layout {
+    min-height: 560px;
+  }
+
+  .career-module-hero-content {
+    padding: 70px 0;
+  }
+
+  .career-module-hero-content h1 {
+    font-size: 46px;
+    letter-spacing: -1.5px;
+  }
+
+  .career-module-hero-description {
+    max-width: 520px;
+    font-size: 16px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .career-module-hero .career-module-container {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .career-module-hero-content {
+    padding: 58px 0;
+  }
+
+  .career-module-hero-content h1 {
+    font-size: 39px;
+  }
+
+  .career-module-hero .career-module-primary-button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   BENEFITS
+========================= */
+
+.career-module-benefits {
+  padding: 92px 0;
+  background: var(--career-white);
+}
+
+.career-module-benefits
+  .career-module-section-heading {
+  max-width: 760px;
+}
+
+.career-module-benefits
+  .career-module-eyebrow {
+  color: var(--career-green);
+}
+
+.career-module-benefits
+  .career-module-section-heading
+  h2 {
+  color: var(--career-black);
+}
+
+.career-module-benefits
+  .career-module-section-heading
+  > p:last-child {
+  color: var(--career-muted);
+}
+
+.career-module-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    minmax(0, 1fr)
+  );
+  gap: 22px;
+}
+
+.career-module-benefit-card {
+  min-height: 275px;
+  padding: 30px 26px;
+  border: 1px solid var(--career-border);
+  border-radius: 8px;
+  background: var(--career-white);
+  box-shadow:
+    0 12px 35px
+    rgba(7, 29, 18, 0.07);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.career-module-benefit-card:hover {
+  border-color: var(--career-green);
+  box-shadow:
+    0 18px 42px
+    rgba(8, 118, 61, 0.14);
+  transform: translateY(-5px);
+}
+
+.career-module-benefit-top {
+  display: flex;
+  margin-bottom: 28px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.career-module-benefit-top > span {
+  color: #b0bbb5;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.career-module-benefit-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 7px;
+  color: var(--career-white);
+  background: var(--career-green);
+}
+
+.career-module-benefit-card h3 {
+  margin: 0 0 14px;
+  color: var(--career-black);
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.career-module-benefit-card > p {
+  margin: 0;
+  color: var(--career-muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
