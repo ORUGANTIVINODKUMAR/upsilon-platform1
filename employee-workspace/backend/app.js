@@ -32,10 +32,10 @@ const allowedOrigins = [
   "https://upsilonservices.com",
   "https://www.upsilonservices.com",
   "https://workspace.upsilonservices.com",
+  "https://upsilon-platform1.onrender.com",
   "http://localhost:5173",
   "http://localhost:5174",
 ];
-
 /* =========================
    CORS
 ========================= */
