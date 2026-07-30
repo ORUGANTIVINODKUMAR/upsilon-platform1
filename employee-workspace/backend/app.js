@@ -13,10 +13,18 @@ import reimbursementRoutes from "./routes/reimbursementRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
-const app = express();
 import holidayRoutes from "./routes/holidayRoutes.js";
+
 import careersRoutes from "./routes/careersRoutes.js";
 import careersAdminRoutes from "./routes/careersAdminRoutes.js";
+
+import careerJobRoutes from "./routes/careerJobRoutes.js";
+import careerApplicationRoutes from "./routes/careerApplicationRoutes.js";
+import careerDashboardRoutes from "./routes/careerDashboardRoutes.js";
+import careerAdminAuthAliasRoutes from "./routes/careerAdminAuthAliasRoutes.js";
+
+const app = express();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -28,10 +36,13 @@ const allowedOrigins = [
   "http://localhost:5174",
 ];
 
+/* =========================
+   CORS
+========================= */
+
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow requests without an Origin header (e.g. Postman)
       if (!origin) {
         return callback(null, true);
       }
@@ -40,33 +51,117 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+      return callback(
+        new Error(`Origin not allowed by CORS: ${origin}`)
+      );
     },
+
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
+/* =========================
+   GLOBAL MIDDLEWARE
+========================= */
+
 app.use(express.json());
+
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
 app.use(cookieParser());
 
-app.use("/uploads", express.static("uploads"));
+/* =========================
+   UPLOADED FILES
+========================= */
+
+app.use(
+  "/uploads",
+  express.static("uploads")
+);
+
+/* =========================
+   EMPLOYEE WORKSPACE APIs
+========================= */
 
 app.use("/api/auth", authRoutes);
 
-app.use("/api/admin", adminRoutes);
+/*
+ * Keep this before /api/admin.
+ * It allows the Careers admin panel to reuse the
+ * existing CareersAdmin login system.
+ */
+app.use(
+  "/api/admin/auth",
+  careerAdminAuthAliasRoutes
+);
 
+app.use("/api/admin", adminRoutes);
 app.use("/api/leave", leaveRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/reimbursements", reimbursementRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/profile", profileRoutes);;
+app.use("/api/profile", profileRoutes);
 app.use("/api/holidays", holidayRoutes);
-app.use("/api", websiteRoutes);
 app.use("/api/teams", teamRoutes);
+
+/* =========================
+   WEBSITE APIs
+========================= */
+
+app.use("/api", websiteRoutes);
+
+/* =========================
+   EXISTING CAREERS APIs
+========================= */
+
 app.use("/api/careers", careersRoutes);
-app.use("/api/careers-admin", careersAdminRoutes);
+
+app.use(
+  "/api/careers-admin",
+  careersAdminRoutes
+);
+
+/* =========================
+   NEW CAREERS MANAGEMENT APIs
+========================= */
+
+app.use(
+  "/api/jobs",
+  careerJobRoutes
+);
+
+app.use(
+  "/api/applications",
+  careerApplicationRoutes
+);
+
+app.use(
+  "/api/careers-dashboard",
+  careerDashboardRoutes
+);
+
+/* =========================
+   PRODUCTION FRONTENDS
+========================= */
+
 const companyFrontendPath = path.resolve(
   __dirname,
   "../../company-website/dist"
@@ -77,12 +172,20 @@ const workspaceFrontendPath = path.resolve(
   "../frontend/dist"
 );
 
-const companyStatic = express.static(companyFrontendPath);
-const workspaceStatic = express.static(workspaceFrontendPath);
+const companyStatic = express.static(
+  companyFrontendPath
+);
+
+const workspaceStatic = express.static(
+  workspaceFrontendPath
+);
 
 if (process.env.NODE_ENV === "production") {
   app.use((req, res, next) => {
-    if (req.path.startsWith("/api/") || req.path.startsWith("/uploads/")) {
+    if (
+      req.path.startsWith("/api/") ||
+      req.path.startsWith("/uploads/")
+    ) {
       return next();
     }
 
@@ -100,7 +203,10 @@ if (process.env.NODE_ENV === "production") {
   });
 
   app.get(/.*/, (req, res, next) => {
-    if (req.path.startsWith("/api/") || req.path.startsWith("/uploads/")) {
+    if (
+      req.path.startsWith("/api/") ||
+      req.path.startsWith("/uploads/")
+    ) {
       return next();
     }
 
@@ -111,26 +217,38 @@ if (process.env.NODE_ENV === "production") {
       hostname.includes("workspace");
 
     const indexFile = isWorkspaceDomain
-      ? path.join(workspaceFrontendPath, "index.html")
-      : path.join(companyFrontendPath, "index.html");
+      ? path.join(
+          workspaceFrontendPath,
+          "index.html"
+        )
+      : path.join(
+          companyFrontendPath,
+          "index.html"
+        );
 
     res.sendFile(indexFile, (error) => {
-      if (error) next(error);
+      if (error) {
+        next(error);
+      }
     });
   });
 } else {
   app.get("/", (req, res) => {
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Upsilon Platform API Running",
     });
   });
 }
 
+/* =========================
+   GLOBAL ERROR HANDLER
+========================= */
+
 app.use((err, req, res, next) => {
   console.error("Server Error:", err);
 
-  res.status(err.status || 500).json({
+  return res.status(err.status || 500).json({
     success: false,
     message: err.message || "Server Error",
   });

@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -10,35 +15,63 @@ import StickyContactButton from "./components/StickyContactButton";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Services from "./pages/Services";
-
 import Resources from "./pages/Resources";
 import ArticlePage from "./pages/ArticlePage";
 import FAQ from "./pages/FAQ";
-
 import Contact from "./pages/Contact";
-import Careers from "./pages/Careers";
-import CareersAbout from "./pages/CareersAbout";
 
+import CareersAbout from "./pages/CareersAbout";
 import CareersTheUpsilonWay from "./pages/CareersTheUpsilonWay";
 import CareersFakeJobAlert from "./pages/CareersFakeJobAlert";
 import CareersAdminLogin from "./pages/CareersAdminLogin";
-
 import CareersAdminDashboard from "./pages/CareersAdminDashboard";
 import CareersAdminRoute from "./components/CareersAdminRoute";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
 
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
-import Tax from "./pages/service-details/Tax";
 
+import Tax from "./pages/service-details/Tax";
 import Accounting from "./pages/service-details/Accounting";
 import Auditing from "./pages/service-details/Auditing";
 import AdminSupport from "./pages/service-details/AdminSupport";
 
+/* New isolated Careers public pages */
+import CareersModule from "./careers/pages/Careers";
+import JobDetails from "./careers/pages/JobDetails";
+import ApplyJob from "./careers/pages/ApplyJob";
+
+/* New isolated Careers admin components */
+import CareersProtectedRoute from "./careers/components/CareersProtectedRoute";
+
+/* New isolated Careers admin pages */
+import CareersManagementLogin from "./careers/admin/Login";
+import CareersDashboard from "./careers/admin/Dashboard";
+import AddJob from "./careers/admin/AddJob";
+import ManageJobs from "./careers/admin/ManageJobs";
+import EditJob from "./careers/admin/EditJob";
+import Applicants from "./careers/admin/Applicants";
+import ApplicantDetails from "./careers/admin/ApplicantDetails";
+
+function ProtectedCareersAdminPage({ children }) {
+  return (
+    <CareersProtectedRoute>
+      {children}
+    </CareersProtectedRoute>
+  );
+}
+
 function App() {
   const location = useLocation();
 
-  // Initialize scroll animations when the application loads.
+  /*
+   * Hide the public website Header, Footer and contact
+   * button on every Careers admin route.
+   */
+  const isCareersManagementRoute =
+    location.pathname === "/admin" ||
+    location.pathname.startsWith("/admin/");
+
   useEffect(() => {
     AOS.init({
       duration: 500,
@@ -48,7 +81,6 @@ function App() {
     });
   }, []);
 
-  // Refresh animations after every route change.
   useEffect(() => {
     const refreshTimer = setTimeout(() => {
       AOS.refresh();
@@ -59,14 +91,17 @@ function App() {
     };
   }, [location.pathname]);
 
-  // Scroll to the top when the visitor opens another page, or to the
-  // matching section when the URL includes a #hash (e.g. /careers#open-roles).
   useEffect(() => {
     if (location.hash) {
-      const target = document.getElementById(location.hash.slice(1));
+      const target = document.getElementById(
+        location.hash.slice(1)
+      );
 
       if (target) {
-        target.scrollIntoView({ block: "start" });
+        target.scrollIntoView({
+          block: "start",
+        });
+
         return;
       }
     }
@@ -80,16 +115,16 @@ function App() {
 
   return (
     <>
-      <Header />
+      {!isCareersManagementRoute && <Header />}
 
       <main>
         <Routes>
-          {/* Main pages */}
+          {/* Existing main pages */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
 
-          {/* Service detail pages */}
+          {/* Existing service detail pages */}
           <Route path="/services/tax" element={<Tax />} />
 
           <Route
@@ -107,29 +142,59 @@ function App() {
             element={<AdminSupport />}
           />
 
-          {/* Resources and articles */}
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/blog/:slug" element={<ArticlePage />} />
+          {/* Existing resources and articles */}
+          <Route
+            path="/resources"
+            element={<Resources />}
+          />
 
-          {/* Additional pages */}
+          <Route
+            path="/blog/:slug"
+            element={<ArticlePage />}
+          />
+
+          {/* Existing additional pages */}
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/careers/about" element={<CareersAbout />} />
+
+          {/* Careers public pages */}
+          <Route
+            path="/careers"
+            element={<CareersModule />}
+          />
+
+          <Route
+            path="/careers/job/:id"
+            element={<JobDetails />}
+          />
+
+          <Route
+            path="/careers/job/:id/apply"
+            element={<ApplyJob />}
+          />
+
+          {/* Existing Careers information pages */}
+          <Route
+            path="/careers/about"
+            element={<CareersAbout />}
+          />
+
           <Route
             path="/careers/the-upsilon-way"
             element={<CareersTheUpsilonWay />}
           />
+
           <Route
             path="/careers/fake-job-alert"
             element={<CareersFakeJobAlert />}
           />
 
-          {/* Careers admin */}
+          {/* Existing legacy Careers admin routes */}
           <Route
             path="/careers-admin/login"
             element={<CareersAdminLogin />}
           />
+
           <Route
             path="/careers-admin"
             element={
@@ -138,16 +203,116 @@ function App() {
               </CareersAdminRoute>
             }
           />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-use" element={<Terms />} />
 
-          {/* 404 page */}
+          {/* Careers management login */}
+          <Route
+            path="/admin"
+            element={<CareersManagementLogin />}
+          />
+
+          {/* Redirect old login URL to the new login URL */}
+          <Route
+            path="/admin/careers/login"
+            element={
+              <Navigate
+                to="/admin"
+                replace
+              />
+            }
+          />
+
+          {/* Redirect admin Careers base URL */}
+          <Route
+            path="/admin/careers"
+            element={
+              <Navigate
+                to="/admin/careers/dashboard"
+                replace
+              />
+            }
+          />
+
+          {/* Careers admin dashboard */}
+          <Route
+            path="/admin/careers/dashboard"
+            element={
+              <ProtectedCareersAdminPage>
+                <CareersDashboard />
+              </ProtectedCareersAdminPage>
+            }
+          />
+
+          {/* Create job */}
+          <Route
+            path="/admin/careers/add-job"
+            element={
+              <ProtectedCareersAdminPage>
+                <AddJob />
+              </ProtectedCareersAdminPage>
+            }
+          />
+
+          {/* Manage jobs */}
+          <Route
+            path="/admin/careers/manage-jobs"
+            element={
+              <ProtectedCareersAdminPage>
+                <ManageJobs />
+              </ProtectedCareersAdminPage>
+            }
+          />
+
+          {/* Edit job */}
+          <Route
+            path="/admin/careers/edit-job/:id"
+            element={
+              <ProtectedCareersAdminPage>
+                <EditJob />
+              </ProtectedCareersAdminPage>
+            }
+          />
+
+          {/* Manage applicants */}
+          <Route
+            path="/admin/careers/applicants"
+            element={
+              <ProtectedCareersAdminPage>
+                <Applicants />
+              </ProtectedCareersAdminPage>
+            }
+          />
+
+          {/* Individual applicant details */}
+          <Route
+            path="/admin/careers/applicants/:id"
+            element={
+              <ProtectedCareersAdminPage>
+                <ApplicantDetails />
+              </ProtectedCareersAdminPage>
+            }
+          />
+
+          {/* Existing legal pages */}
+          <Route
+            path="/privacy-policy"
+            element={<PrivacyPolicy />}
+          />
+
+          <Route
+            path="/terms-of-use"
+            element={<Terms />}
+          />
+
+          {/* Existing 404 page */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
-      <Footer />
-      <StickyContactButton />
+      {!isCareersManagementRoute && <Footer />}
+
+      {!isCareersManagementRoute && (
+        <StickyContactButton />
+      )}
     </>
   );
 }
